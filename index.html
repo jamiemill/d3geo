@@ -32,10 +32,15 @@
   stroke: #a5967e;
 }
 
+.country-point {
+  fill: steelblue;
+}
+
 </style>
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/topojson.v0.min.js"></script>
+<script src="underscore-min.js"></script>
 <script>
 
 var width = 960,
@@ -80,6 +85,25 @@ d3.json("/world-110m.json", function(error, world) {
       .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a.id !== b.id; }))
       .attr("class", "boundary")
       .attr("d", path);
+
+
+  d3.csv('/country_latlon.csv', function(error, countryLocations) {
+
+    var countriesToPlot = ['US', 'GB', 'JP', 'BR'];
+
+
+    _.each(countriesToPlot, function(countryToPlot) {
+
+      var country = _.find(countryLocations, function(country) { return country['iso 3166 country'] === countryToPlot; })
+      var countryLocation = projection([country.longitude, country.latitude]);
+      svg.append("circle")
+        .attr("cx", countryLocation[0])
+        .attr("cy", countryLocation[1])
+        .attr("r", 10)
+        .attr("class", "country-point");
+    });
+  });
+
 });
 
 </script>
