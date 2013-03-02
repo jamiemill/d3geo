@@ -30,25 +30,29 @@ svg.append("path")
     .attr("class", "foreground")
     .attr("d", path);
 
-d3.json("/world-110m.json", function(error, world) {
+
+$.when(
+    $.getJSON('world-110m.json'),
+    $.get('country_latlon.csv')
+).done(function(worldXHR, countryLocationsXHR) {
+    renderMap(worldXHR[0]);
+    renderDots(d3.csv.parse(countryLocationsXHR[0]));
+});
+
+function renderMap(world) {
   svg.insert("path", ".graticule")
       .datum(topojson.object(world, world.objects.land))
       .attr("class", "land")
       .attr("d", path);
-
   svg.insert("path", ".graticule")
       .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a.id !== b.id; }))
       .attr("class", "boundary")
       .attr("d", path);
+}
 
-
-  d3.csv('/country_latlon.csv', function(error, countryLocations) {
-
+function renderDots(countryLocations) {
     var countriesToPlot = ['US', 'GB', 'JP', 'BR'];
-
-
     _.each(countriesToPlot, function(countryToPlot) {
-
       var country = _.find(countryLocations, function(country) { return country['iso 3166 country'] === countryToPlot; });
       var countryLocation = projection([country.longitude, country.latitude]);
       svg.append("circle")
@@ -57,6 +61,4 @@ d3.json("/world-110m.json", function(error, world) {
         .attr("r", 10)
         .attr("class", "country-point");
     });
-  });
-
-});
+}
