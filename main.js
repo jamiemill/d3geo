@@ -15,6 +15,17 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
+var gradient = svg.append("defs")
+    .append("linearGradient")
+    .attr("id", "ideagrad");
+
+gradient.append("stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "#00acf0");
+gradient.append("stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "#ec6b10");
+
 svg.append("path")
     .datum(graticule.outline)
     .attr("class", "background")
@@ -102,6 +113,7 @@ function renderIdeas(options) {
         .enter()
         .append('path')
         .attr('class', 'idea')
+        .attr('stroke', 'url(#ideagrad)')
         .attr('d', function(d) {
             var baseCurrencyXY = currencyCodeToXY(d['Base Currency'], options.currencies, options.locations);
             var quoteCurrencyXY = currencyCodeToXY(d['Quote Currency'], options.currencies, options.locations);
