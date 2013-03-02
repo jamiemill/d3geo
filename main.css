@@ -1,11 +1,9 @@
-.background {
-  fill: white;
+svg {
+    border: 1px solid #333;
 }
 
-.border {
-  fill: none;
-  stroke: #333;
-  stroke-width: 1.5px;
+.background {
+  fill: white;
 }
 
 .land {

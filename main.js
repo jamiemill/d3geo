@@ -2,7 +2,8 @@ var width = 960,
     height = 500;
 
 var projection = d3.geo.equirectangular()
-    .scale(150);
+    .scale(190)
+    .translate([360, 270]);
 
 var path = d3.geo.path()
     .projection(projection);
@@ -18,12 +19,6 @@ svg.append("path")
     .datum(graticule.outline)
     .attr("class", "background")
     .attr("d", path);
-
-svg.append("path")
-    .datum(graticule.outline)
-    .attr("class", "border")
-    .attr("d", path);
-
 
 $.when(
     $.getJSON('world-110m.json'),
