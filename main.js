@@ -105,8 +105,19 @@ function renderIdeas(options) {
         .attr('d', function(d) {
             var baseCurrencyXY = currencyCodeToXY(d['Base Currency'], options.currencies, options.locations);
             var quoteCurrencyXY = currencyCodeToXY(d['Quote Currency'], options.currencies, options.locations);
+            var start;
+            var end;
+            // 'base' is the one on the left, e.g. EUR in EURGBP.
+            // that's the one the direction applies to.
+            if (d.Direction === 'Buy') {
+                start = baseCurrencyXY;
+                end = quoteCurrencyXY;
+            } else {
+                start = quoteCurrencyXY;
+                end = baseCurrencyXY;
+            }
             var n = countOthersBefore(options.ideas, d);
-            return generateCurve(baseCurrencyXY, quoteCurrencyXY, n);
+            return generateCurve(start, end, n);
         });
 }
 
