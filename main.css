@@ -17,7 +17,8 @@ svg {
 }
 
 .country-point {
-  fill: red;
+  fill: white;
+  stroke: red;
 }
 
 text.label {

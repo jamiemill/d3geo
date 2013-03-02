@@ -75,17 +75,23 @@ function ideasToUniqueCurrencies(ideas) {
 // Todo: rewrite as data-driven?
 function renderDots(options) {
     var currencies = ideasToUniqueCurrencies(options.ideas);
+    var rectWidth = 22;
+    var rectHeight = 11;
     _.each(currencies, function(currency) {
         xy = currencyCodeToXY(currency, options.currencies, options.locations);
-        svg.append("circle")
-            .attr("cx", xy[0])
-            .attr("cy", xy[1])
-            .attr("r", 4)
+        svg.append("rect")
+            .attr("x", xy[0] - rectWidth/2)
+            .attr("y", xy[1] - rectHeight/2)
+            .attr("rx", 4)
+            .attr("ry", 4)
+            .attr("width", rectWidth)
+            .attr("height", rectHeight)
             .attr("class", "country-point");
         svg.append("text")
             .attr("class", "label")
-            .attr("x", xy[0] - 8)
-            .attr("y", xy[1] - 5)
+            .attr("x", xy[0])
+            .attr("y", xy[1] + 3)
+            .attr("text-anchor", "middle")
             .text(currency);
     });
 }
