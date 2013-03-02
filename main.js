@@ -105,7 +105,8 @@ function renderIdeas(options) {
         .append('path')
         .attr('class', 'idea')
         .attr('stroke', function(d) {
-            return pickGradient(d, options.currencies, options.locations);
+            var isShort = d.Direction === 'Sell';
+            return pickGradient(d, options.currencies, options.locations, isShort);
         })
         .attr('d', function(d) {
             var points = getStartAndEndPoints(d, options.currencies, options.locations);
@@ -114,8 +115,11 @@ function renderIdeas(options) {
         });
 }
 
-function pickGradient(idea, currencies, locations) {
+function pickGradient(idea, currencies, locations, isShort) {
     var points = getStartAndEndPoints(idea, currencies, locations);
+    if (isShort) {
+        points = points.reverse();
+    }
     return _pickGradient(points[0], points[1]);
 }
 
@@ -131,14 +135,7 @@ function _pickGradient(p1, p2) {
 function getStartAndEndPoints(idea, currencies, locations) {
     var baseCurrencyXY = currencyCodeToXY(idea['Base Currency'], currencies, locations);
     var quoteCurrencyXY = currencyCodeToXY(idea['Quote Currency'], currencies, locations);
-
-    var points = [baseCurrencyXY, quoteCurrencyXY];
-    // 'base' is the one on the left, e.g. EUR in EURGBP.
-    // that's the one the direction applies to.
-    if (idea.Direction === 'Sell') {
-        points = points.reverse();
-    }
-    return points;
+    return [baseCurrencyXY, quoteCurrencyXY];
 }
 
 function countOthersBefore(ideas, idea) {
