@@ -107,6 +107,14 @@ function renderIdeas(options) {
         .attr('d', function(d) {
             var baseCurrencyXY = currencyCodeToXY(d['Base Currency'], options.currencies, options.locations);
             var quoteCurrencyXY = currencyCodeToXY(d['Quote Currency'], options.currencies, options.locations);
-            return 'M' + baseCurrencyXY[0] + ' ' + baseCurrencyXY[1] + 'L' + quoteCurrencyXY[0] + ' ' + quoteCurrencyXY[1];
+            return generateCurve(baseCurrencyXY, quoteCurrencyXY);
         });
 }
+
+function generateCurve(xy1, xy2) {
+    var start = xy1[0] + ' ' + xy1[1];
+    var via = '500 50';
+    var end = xy2[0] + ' ' + xy2[1];
+    return ['M', start, 'Q', via, end].join(' ');
+}
+
