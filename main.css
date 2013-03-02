@@ -31,3 +31,8 @@
 .country-point {
   fill: steelblue;
 }
+
+text.label {
+    font-family: Arial, sans-serif;
+    font-size: 8px;
+}

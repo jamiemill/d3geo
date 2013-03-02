@@ -79,5 +79,10 @@ function renderDots(options) {
             .attr("cy", xy[1])
             .attr("r", 4)
             .attr("class", "country-point");
+        svg.append("text")
+            .attr("class", "label")
+            .attr("x", xy[0] - 8)
+            .attr("y", xy[1] - 5)
+            .text(currency);
     });
 }
