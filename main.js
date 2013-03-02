@@ -111,10 +111,29 @@ function renderIdeas(options) {
         });
 }
 
-function generateCurve(xy1, xy2) {
-    var start = xy1[0] + ' ' + xy1[1];
-    var via = '500 50';
-    var end = xy2[0] + ' ' + xy2[1];
+function generateCurve(p1, p2) {
+    var start = p1[0] + ' ' + p1[1];
+    var via = calculateVia(p1, p2);
+    var end = p2[0] + ' ' + p2[1];
     return ['M', start, 'Q', via, end].join(' ');
 }
 
+function calculateVia(p1, p2) {
+    var midpoint = calculateMidpoint(p1, p2);
+    var dx = p2[0] - p1[0];
+    var dy = p2[1] - p1[1];
+    var straightness = 4;
+    // extends at a right angle from the midpoint.
+    // distance is modulated by 'straightness' value.
+    return [
+        midpoint[0] + dy/straightness,
+        midpoint[1] - dx/straightness
+    ];
+}
+
+function calculateMidpoint(p1, p2) {
+    return [
+        (p1[0] + p2[0]) / 2,
+        (p1[1] + p2[1]) / 2
+    ];
+}
