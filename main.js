@@ -56,7 +56,7 @@ function renderMap(world) {
         .attr("d", path);
 }
 
-function currencyToLocation(currencyCode, currencies, locations) {
+function currencyCodeToLocation(currencyCode, currencies, locations) {
     var currency = _.find(currencies, function(currency) { return currency.code === currencyCode; });
     return _.find(locations, function(country) { return country['iso 3166 country'] === currency.country; });
 }
@@ -72,7 +72,7 @@ function ideasToUniqueCurrencies(ideas) {
 function renderDots(options) {
     var currencies = ideasToUniqueCurrencies(options.ideas);
     _.each(currencies, function(currency) {
-        var location = currencyToLocation(currency, options.currencies, options.locations);
+        var location = currencyCodeToLocation(currency, options.currencies, options.locations);
         var xy = projection([location.longitude, location.latitude]);
         svg.append("circle")
             .attr("cx", xy[0])
