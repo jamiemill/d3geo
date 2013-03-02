@@ -1,30 +1,41 @@
+@import url(http://fonts.googleapis.com/css?family=Press+Start+2P);
+
+body {
+  background-color: black;
+}
+
 svg {
-    border: 1px solid #333;
+  border: 1px solid #ccc;
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
 }
 
 .background {
-  fill: white;
+  fill: black;
 }
 
 .land {
-  fill: #aaa;
-  stroke: none;
+  fill: none;
+  stroke: darkblue;
 }
 
 .boundary {
   fill: none;
-  stroke: white;
+  stroke: darkblue;
 }
 
 .country-point {
-  fill: white;
-  stroke: red;
+  fill: none;
+  stroke: none;
 }
 
 text.label {
-    font-family: Arial, sans-serif;
-    font-weight: bold;
-    font-size: 8px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 6pt;
+    fill: #ccc;
+    stroke: none;
 }
 
 .idea {
