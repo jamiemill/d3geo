@@ -20,9 +20,9 @@ svg.append("path")
 
 svg.append("g")
     .attr("class", "graticule")
-  .selectAll("path")
+    .selectAll("path")
     .data(graticule.lines)
-  .enter().append("path")
+    .enter().append("path")
     .attr("d", path);
 
 svg.append("path")
@@ -46,14 +46,14 @@ $.when(
 });
 
 function renderMap(world) {
-  svg.insert("path", ".graticule")
-      .datum(topojson.object(world, world.objects.land))
-      .attr("class", "land")
-      .attr("d", path);
-  svg.insert("path", ".graticule")
-      .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a.id !== b.id; }))
-      .attr("class", "boundary")
-      .attr("d", path);
+    svg.insert("path", ".graticule")
+        .datum(topojson.object(world, world.objects.land))
+        .attr("class", "land")
+        .attr("d", path);
+    svg.insert("path", ".graticule")
+        .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a.id !== b.id; }))
+        .attr("class", "boundary")
+        .attr("d", path);
 }
 
 function currencyToLocation(currencyCode, currencies, locations) {
@@ -63,21 +63,21 @@ function currencyToLocation(currencyCode, currencies, locations) {
 
 function ideasToUniqueCurrencies(ideas) {
     return _(ideas).chain()
-      .map(function(idea) { return [idea['Base Currency'], idea['Quote Currency']]; })
-      .flatten()
-      .uniq()
-      .value();
+        .map(function(idea) { return [idea['Base Currency'], idea['Quote Currency']]; })
+        .flatten()
+        .uniq()
+        .value();
 }
 
 function renderDots(options) {
     var currencies = ideasToUniqueCurrencies(options.ideas);
     _.each(currencies, function(currency) {
-      var location = currencyToLocation(currency, options.currencies, options.locations);
-      var xy = projection([location.longitude, location.latitude]);
-      svg.append("circle")
-        .attr("cx", xy[0])
-        .attr("cy", xy[1])
-        .attr("r", 4)
-        .attr("class", "country-point");
+        var location = currencyToLocation(currency, options.currencies, options.locations);
+        var xy = projection([location.longitude, location.latitude]);
+        svg.append("circle")
+            .attr("cx", xy[0])
+            .attr("cy", xy[1])
+            .attr("r", 4)
+            .attr("class", "country-point");
     });
 }
