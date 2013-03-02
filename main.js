@@ -122,12 +122,12 @@ function calculateVia(p1, p2) {
     var midpoint = calculateMidpoint(p1, p2);
     var dx = p2[0] - p1[0];
     var dy = p2[1] - p1[1];
-    var straightness = 4;
+    var curviness = 0.25;
     // extends at a right angle from the midpoint.
-    // distance is modulated by 'straightness' value.
+    // distance is modulated by 'curviness' value.
     return [
-        midpoint[0] + dy/straightness,
-        midpoint[1] - dx/straightness
+        midpoint[0] + curviness * dy,
+        midpoint[1] - curviness * dx
     ];
 }
 
