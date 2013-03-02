@@ -49,7 +49,7 @@ d3.json("/world-110m.json", function(error, world) {
 
     _.each(countriesToPlot, function(countryToPlot) {
 
-      var country = _.find(countryLocations, function(country) { return country['iso 3166 country'] === countryToPlot; })
+      var country = _.find(countryLocations, function(country) { return country['iso 3166 country'] === countryToPlot; });
       var countryLocation = projection([country.longitude, country.latitude]);
       svg.append("circle")
         .attr("cx", countryLocation[0])
