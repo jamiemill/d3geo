@@ -19,16 +19,9 @@ svg.append("path")
     .attr("class", "background")
     .attr("d", path);
 
-svg.append("g")
-    .attr("class", "graticule")
-    .selectAll("path")
-    .data(graticule.lines)
-    .enter().append("path")
-    .attr("d", path);
-
 svg.append("path")
     .datum(graticule.outline)
-    .attr("class", "foreground")
+    .attr("class", "border")
     .attr("d", path);
 
 
@@ -39,12 +32,12 @@ $.when(
     $.get('fxideas.csv')
 ).done(function(worldXHR, locationsXHR, currenciesXHR, fxIdeasXHR) {
     renderMap(worldXHR[0]);
-    renderDots({
+    renderIdeas({
         locations: d3.csv.parse(locationsXHR[0]),
         ideas: d3.csv.parse(fxIdeasXHR[0]),
         currencies: d3.csv.parse(currenciesXHR[0])
     });
-    renderIdeas({
+    renderDots({
         locations: d3.csv.parse(locationsXHR[0]),
         ideas: d3.csv.parse(fxIdeasXHR[0]),
         currencies: d3.csv.parse(currenciesXHR[0])
