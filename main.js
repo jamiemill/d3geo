@@ -64,7 +64,11 @@ function renderMap(world) {
 
 function currencyCodeToLocation(currencyCode, currencies, locations) {
     var currency = _.find(currencies, function(currency) { return currency.code === currencyCode; });
-    return _.find(locations, function(country) { return country['iso 3166 country'] === currency.country; });
+    var countryCode = currency.country;
+    if (countryCode === 'EU') {
+        countryCode = 'FR';
+    }
+    return _.find(locations, function(country) { return country['iso 3166 country'] === countryCode; });
 }
 
 function currencyCodeToXY(currencyCode, currencies, locations) {
