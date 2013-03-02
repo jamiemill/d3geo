@@ -111,22 +111,47 @@ function renderIdeas(options) {
         .attr('d', function(d) {
             var baseCurrencyXY = currencyCodeToXY(d['Base Currency'], options.currencies, options.locations);
             var quoteCurrencyXY = currencyCodeToXY(d['Quote Currency'], options.currencies, options.locations);
-            return generateCurve(baseCurrencyXY, quoteCurrencyXY);
+            var n = countOthersBefore(options.ideas, d);
+            return generateCurve(baseCurrencyXY, quoteCurrencyXY, n);
         });
 }
 
-function generateCurve(p1, p2) {
+function countOthersBefore(ideas, idea) {
+    return _.indexOf(
+        _.filter(ideas, function(_idea) {
+            return _idea['Base Currency'] === idea['Base Currency'] &&
+                _idea['Quote Currency'] === idea['Quote Currency'];
+        }),
+        idea
+    );
+}
+
+// 'offset' is an integer that says "this is the nth line between these points"
+// and causes it to be drawn with a more extreme curve so as not to obscure other lines
+// connecting the same points.
+function generateCurve(p1, p2, offset) {
+    // scale the offset by line length. Longer lines shouldn't
+    // be so curvy.
+    var space = 3;
+    var adjustedOffset = offset / calculateDistance(p1, p2) * space;
+    var curviness = 0.2 + adjustedOffset;
+
     var start = p1[0] + ' ' + p1[1];
-    var via = calculateVia(p1, p2);
+    var via = calculateVia(p1, p2, curviness);
     var end = p2[0] + ' ' + p2[1];
     return ['M', start, 'Q', via, end].join(' ');
 }
 
-function calculateVia(p1, p2) {
+function calculateDistance(p1, p2) {
+    var dx = p2[0] - p1[0];
+    var dy = p2[1] - p1[1];
+    return Math.sqrt(dx*dx + dy*dy);
+}
+
+function calculateVia(p1, p2, curviness) {
     var midpoint = calculateMidpoint(p1, p2);
     var dx = p2[0] - p1[0];
     var dy = p2[1] - p1[1];
-    var curviness = 0.25;
     // extends at a right angle from the midpoint.
     // distance is modulated by 'curviness' value.
     return [
