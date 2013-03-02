@@ -10,6 +10,7 @@ var path = d3.geo.path()
 var graticule = d3.geo.graticule();
 
 var svg = d3.select("body").append("svg")
+    .attr("class", 'world')
     .attr("width", width)
     .attr("height", height);
 
@@ -43,6 +44,11 @@ $.when(
         ideas: d3.csv.parse(fxIdeasXHR[0]),
         currencies: d3.csv.parse(currenciesXHR[0])
     });
+    renderIdeas({
+        locations: d3.csv.parse(locationsXHR[0]),
+        ideas: d3.csv.parse(fxIdeasXHR[0]),
+        currencies: d3.csv.parse(currenciesXHR[0])
+    });
 });
 
 function renderMap(world) {
@@ -61,6 +67,11 @@ function currencyCodeToLocation(currencyCode, currencies, locations) {
     return _.find(locations, function(country) { return country['iso 3166 country'] === currency.country; });
 }
 
+function currencyCodeToXY(currencyCode, currencies, locations) {
+    var location = currencyCodeToLocation(currencyCode, currencies, locations);
+    return  projection([location.longitude, location.latitude]);
+}
+
 function ideasToUniqueCurrencies(ideas) {
     return _(ideas).chain()
         .map(function(idea) { return [idea['Base Currency'], idea['Quote Currency']]; })
@@ -69,11 +80,11 @@ function ideasToUniqueCurrencies(ideas) {
         .value();
 }
 
+// Todo: rewrite as data-driven?
 function renderDots(options) {
     var currencies = ideasToUniqueCurrencies(options.ideas);
     _.each(currencies, function(currency) {
-        var location = currencyCodeToLocation(currency, options.currencies, options.locations);
-        var xy = projection([location.longitude, location.latitude]);
+        xy = currencyCodeToXY(currency, options.currencies, options.locations);
         svg.append("circle")
             .attr("cx", xy[0])
             .attr("cy", xy[1])
@@ -85,4 +96,17 @@ function renderDots(options) {
             .attr("y", xy[1] - 5)
             .text(currency);
     });
+}
+
+function renderIdeas(options) {
+    d3.select('.world').selectAll('.idea')
+        .data(options.ideas)
+        .enter()
+        .append('path')
+        .attr('class', 'idea')
+        .attr('d', function(d) {
+            var baseCurrencyXY = currencyCodeToXY(d['Base Currency'], options.currencies, options.locations);
+            var quoteCurrencyXY = currencyCodeToXY(d['Quote Currency'], options.currencies, options.locations);
+            return 'M' + baseCurrencyXY[0] + ' ' + baseCurrencyXY[1] + 'L' + quoteCurrencyXY[0] + ' ' + quoteCurrencyXY[1];
+        });
 }
