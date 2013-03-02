@@ -15,16 +15,7 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-var gradient = svg.append("defs")
-    .append("linearGradient")
-    .attr("id", "ideagrad");
-
-gradient.append("stop")
-    .attr("offset", "0%")
-    .attr("stop-color", "#00acf0");
-gradient.append("stop")
-    .attr("offset", "100%")
-    .attr("stop-color", "#ec6b10");
+generateDirectionalGradients();
 
 svg.append("path")
     .datum(graticule.outline)
@@ -113,24 +104,41 @@ function renderIdeas(options) {
         .enter()
         .append('path')
         .attr('class', 'idea')
-        .attr('stroke', 'url(#ideagrad)')
+        .attr('stroke', function(d) {
+            return pickGradient(d, options.currencies, options.locations);
+        })
         .attr('d', function(d) {
-            var baseCurrencyXY = currencyCodeToXY(d['Base Currency'], options.currencies, options.locations);
-            var quoteCurrencyXY = currencyCodeToXY(d['Quote Currency'], options.currencies, options.locations);
-            var start;
-            var end;
-            // 'base' is the one on the left, e.g. EUR in EURGBP.
-            // that's the one the direction applies to.
-            if (d.Direction === 'Buy') {
-                start = baseCurrencyXY;
-                end = quoteCurrencyXY;
-            } else {
-                start = quoteCurrencyXY;
-                end = baseCurrencyXY;
-            }
+            var points = getStartAndEndPoints(d, options.currencies, options.locations);
             var n = countOthersBefore(options.ideas, d);
-            return generateCurve(start, end, n);
+            return Utils.generateCurve(points[0], points[1], n);
         });
+}
+
+function pickGradient(idea, currencies, locations) {
+    var points = getStartAndEndPoints(idea, currencies, locations);
+    return _pickGradient(points[0], points[1]);
+}
+
+function _pickGradient(p1, p2) {
+    var angleRadians = Utils.calculateAngle(p1, p2);
+    var sector = Math.round(angleRadians/(2*Math.PI)*4);
+    if (sector === 4) {
+        sector = 0;
+    }
+    return 'url(#ideagrad-'+sector+')';
+}
+
+function getStartAndEndPoints(idea, currencies, locations) {
+    var baseCurrencyXY = currencyCodeToXY(idea['Base Currency'], currencies, locations);
+    var quoteCurrencyXY = currencyCodeToXY(idea['Quote Currency'], currencies, locations);
+
+    var points = [baseCurrencyXY, quoteCurrencyXY];
+    // 'base' is the one on the left, e.g. EUR in EURGBP.
+    // that's the one the direction applies to.
+    if (idea.Direction === 'Sell') {
+        points = points.reverse();
+    }
+    return points;
 }
 
 function countOthersBefore(ideas, idea) {
@@ -143,43 +151,33 @@ function countOthersBefore(ideas, idea) {
     );
 }
 
-// 'offset' is an integer that says "this is the nth line between these points"
-// and causes it to be drawn with a more extreme curve so as not to obscure other lines
-// connecting the same points.
-function generateCurve(p1, p2, offset) {
-    // scale the offset by line length. Longer lines shouldn't
-    // be so curvy.
-    var space = 3;
-    var adjustedOffset = offset / calculateDistance(p1, p2) * space;
-    var curviness = 0.2 + adjustedOffset;
-
-    var start = p1[0] + ' ' + p1[1];
-    var via = calculateVia(p1, p2, curviness);
-    var end = p2[0] + ' ' + p2[1];
-    return ['M', start, 'Q', via, end].join(' ');
-}
-
-function calculateDistance(p1, p2) {
-    var dx = p2[0] - p1[0];
-    var dy = p2[1] - p1[1];
-    return Math.sqrt(dx*dx + dy*dy);
-}
-
-function calculateVia(p1, p2, curviness) {
-    var midpoint = calculateMidpoint(p1, p2);
-    var dx = p2[0] - p1[0];
-    var dy = p2[1] - p1[1];
-    // extends at a right angle from the midpoint.
-    // distance is modulated by 'curviness' value.
-    return [
-        midpoint[0] + curviness * dy,
-        midpoint[1] - curviness * dx
-    ];
-}
-
-function calculateMidpoint(p1, p2) {
-    return [
-        (p1[0] + p2[0]) / 2,
-        (p1[1] + p2[1]) / 2
-    ];
+function generateDirectionalGradients() {
+    // Create four gradients, one facing right,
+    // down, left and up.
+    var defs = svg.append("defs");
+    var grads = [];
+    for(var i=0; i<4; i++) {
+        var grad = defs.append("linearGradient");
+        grad
+            .attr("y1", "0%")
+            .attr("y2", "0%")
+            .attr("x1", "0%")
+            .attr("x2", "0%")
+            .attr("id", "ideagrad-"+i);
+        grad.append("stop")
+            .attr("offset", "0%")
+            .attr("stop-color", "#00acf0");
+        grad.append("stop")
+            .attr("offset", "100%")
+            .attr("stop-color", "#ec6b10");
+        grads.push(grad);
+    }
+    // up
+    grads[0].attr("y1", "100%");
+    // left
+    grads[1].attr("x1", "100%");
+    // down
+    grads[2].attr("y2", "100%");
+    // right
+    grads[3].attr("x2", "100%");
 }
