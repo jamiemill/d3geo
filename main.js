@@ -33,10 +33,16 @@ svg.append("path")
 
 $.when(
     $.getJSON('world-110m.json'),
-    $.get('country_latlon.csv')
-).done(function(worldXHR, countryLocationsXHR) {
+    $.get('country_latlon.csv'),
+    $.get('currencies.csv'),
+    $.get('fxideas.csv')
+).done(function(worldXHR, locationsXHR, currenciesXHR, fxIdeasXHR) {
     renderMap(worldXHR[0]);
-    renderDots(d3.csv.parse(countryLocationsXHR[0]));
+    renderDots({
+        locations: d3.csv.parse(locationsXHR[0]),
+        ideas: d3.csv.parse(fxIdeasXHR[0]),
+        currencies: d3.csv.parse(currenciesXHR[0])
+    });
 });
 
 function renderMap(world) {
@@ -50,15 +56,28 @@ function renderMap(world) {
       .attr("d", path);
 }
 
-function renderDots(countryLocations) {
-    var countriesToPlot = ['US', 'GB', 'JP', 'BR'];
-    _.each(countriesToPlot, function(countryToPlot) {
-      var country = _.find(countryLocations, function(country) { return country['iso 3166 country'] === countryToPlot; });
-      var countryLocation = projection([country.longitude, country.latitude]);
+function currencyToLocation(currencyCode, currencies, locations) {
+    var currency = _.find(currencies, function(currency) { return currency.code === currencyCode; });
+    return _.find(locations, function(country) { return country['iso 3166 country'] === currency.country; });
+}
+
+function ideasToUniqueCurrencies(ideas) {
+    return _(ideas).chain()
+      .map(function(idea) { return [idea['Base Currency'], idea['Quote Currency']]; })
+      .flatten()
+      .uniq()
+      .value();
+}
+
+function renderDots(options) {
+    var currencies = ideasToUniqueCurrencies(options.ideas);
+    _.each(currencies, function(currency) {
+      var location = currencyToLocation(currency, options.currencies, options.locations);
+      var xy = projection([location.longitude, location.latitude]);
       svg.append("circle")
-        .attr("cx", countryLocation[0])
-        .attr("cy", countryLocation[1])
-        .attr("r", 10)
+        .attr("cx", xy[0])
+        .attr("cy", xy[1])
+        .attr("r", 4)
         .attr("class", "country-point");
     });
 }
