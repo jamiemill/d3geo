@@ -112,7 +112,21 @@ function renderIdeas(options) {
             var points = getStartAndEndPoints(d, options.currencies, options.locations);
             var n = countOthersBefore(options.ideas, d);
             return Utils.generateCurve(points[0], points[1], n);
-        });
+        })
+        .attr("stroke-dasharray", function(d) {
+            var pathLength = this.getTotalLength();
+            return pathLength + " " + pathLength;
+        })
+        .attr("stroke-dashoffset", function(d) {
+            var pathLength = this.getTotalLength();
+            return pathLength;
+        })
+        .transition()
+        .delay(function(d, i) {
+            return i * 500;
+        })
+        .duration(2000)
+        .attr("stroke-dashoffset", 0);
 }
 
 function pickGradient(idea, currencies, locations, isShort) {
