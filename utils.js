@@ -18,8 +18,9 @@ var Utils = {
         // scale the offset by line length. Longer lines shouldn't
         // be so curvy.
         var space = 3;
+        var baseCurviness = 0.3;
         var adjustedOffset = offset / this.calculateDistance(p1, p2) * space;
-        var curviness = 0.2 + adjustedOffset;
+        var curviness = baseCurviness + adjustedOffset;
 
         var start = p1[0] + ' ' + p1[1];
         var via = this.calculateVia(p1, p2, curviness);
