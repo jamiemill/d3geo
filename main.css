@@ -7,7 +7,7 @@ svg {
 }
 
 .land {
-  fill: #aaa;
+  fill: #ddd;
   stroke: none;
 }
 
@@ -18,7 +18,7 @@ svg {
 
 .country-point {
   fill: white;
-  stroke: red;
+  stroke: #888;
 }
 
 text.label {
@@ -28,6 +28,7 @@ text.label {
 }
 
 .idea {
-    stroke-width: 1px;
+    stroke-width: 1.5px;
     fill: none;
+    opacity: 0.75;
 }
