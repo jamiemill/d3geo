@@ -119,7 +119,8 @@ function renderIdeas(options) {
         })
         .attr("stroke-dashoffset", function(d) {
             var pathLength = this.getTotalLength();
-            return pathLength;
+            var isShort = d.Direction === 'Sell';
+            return pathLength * (isShort ? 1 : -1);
         })
         .transition()
         .delay(function(d, i) {
