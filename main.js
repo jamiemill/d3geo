@@ -177,10 +177,10 @@ function generateDirectionalGradients() {
             .attr("x2", "0%")
             .attr("id", "ideagrad-"+i);
         grad.append("stop")
-            .attr("offset", "0%")
+            .attr("offset", "25%")
             .attr("stop-color", "#00acf0");
         grad.append("stop")
-            .attr("offset", "100%")
+            .attr("offset", "75%")
             .attr("stop-color", "#ec6b10");
         grads.push(grad);
     }
